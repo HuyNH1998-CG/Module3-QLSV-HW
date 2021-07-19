@@ -63,14 +63,14 @@ where k_ten like "%CNTT%";
 -- Số lượng sinh viên loại giỏi, loại khá, loại trung bình (trong cùng 1 query)
 select
 count(case when sv_DiemTB > 8.0 then 1 else null end) as "Gioi",
-count(case when sv_DiemTB >= 6.0 and sv_DiemTB <= 8.0 then 1 else null end) as "Kha",
+count(case when sv_DiemTB between 6.0 and 8.0 then 1 else null end) as "Kha",
 count(case when sv_DiemTB < 6.0 then 1 else null end) as "Trung Binh"
 from tblsinhvien;
 
 -- Số lượng sinh viên loại giỏi, khá, trung bình của từng lớp (trong cùng 1 query)
 select l_ten, sum(if (sv_diemtb >= 8.0 , 1, 0)) as "gioi",
 sum(if(sv_diemtb < 6.0 , 1, 0)) as "trung binh",
-sum(if(sv_diemtb < 8.0 and sv_diemtb >= 6.0 , 1, 0)) as "kha"
+sum(if(sv_diemtb between 6.0 and 8.0 , 1, 0)) as "kha"
 from tbllop join tblsinhvien
 on tblsinhvien.sv_lop = tbllop.l_id
 group by tbllop.l_id;
@@ -96,11 +96,11 @@ join tblkhoa on
 tbllop.l_khoa = tblkhoa.k_id
 group by tblkhoa.k_id;
 
--- Tên khoa, tên lớp, điểm trung bình của sinh viên (chú ý: liệt kê tất cả các khoa và lớp, kể cả khoa và lớp chưa có sinh viên) <-- Không rõ lắm câu n
+-- Tên khoa, tên lớp, điểm trung bình của sinh viên (chú ý: liệt kê tất cả các khoa và lớp, kể cả khoa và lớp chưa có sinh viên)
 select k_ten, l_ten, if(sv_lop = l_id, avg(sv_diemtb), 0) as "diem trung binh" from tblkhoa
-join tbllop
+left join tbllop
 on tbllop.l_khoa = tblkhoa.k_id
-join tblsinhvien
+left join tblsinhvien
 on tblsinhvien.sv_lop = tbllop.l_id
 group by tbllop.l_ten;
 
